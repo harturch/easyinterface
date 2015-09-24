@@ -5,31 +5,27 @@
 \label{ch:eiol}
 
 In this chapter we describe a text-based output language that allows
-application to view their output in a graphical way, e.g.,
+applications to view their output in a graphical way, e.g.,
 highlighting lines, adding markers, defining on-click actions, etc.
 %
 Some clients, e.g., the web-client, interpret this language and render
-the effect of the corresponding commands in the respective environment.
+the effect of the corresponding commands in the respective
+environment. An output in this language is an XML structure the adhere
+to the syntax of \xmlstructref{eiout}{eiout} that is described below.
 
 
-\section{Brief description}
-\label{outputmanager:sec:desc}
-
-\section{Details XML output}
-\label{outputmanager:sec:output}
-
-
-%% 
-\bigskip
-
+\section{Syntax and Semantics}
 %% EIOUT
 %%
-\xmlstruct{eiout} 
-{
+\bigskip
+\xmlstruct
+{eiout}
+{eiout} 
+{%
 %
-  This is the main environment of the output, it includes several list
-  of commands environment \xmlstructref{eicommands}, and several list
-  of actions actions \xmlstructref{eiactions}. 
+  This is the main environment of the output, it includes several
+  lists of command environments \xmlstructref{eiout}{eicommands}, and
+  several lists of action environments \xmlstructref{eiout}{eiactions}.
 %
   Commands are executed first, in the given order, and then actions are
   executed in the given order as well.
@@ -38,15 +34,15 @@ the effect of the corresponding commands in the respective environment.
   output language that is used, which is $1.0$ by default.
 %
 }
-{The \app response (see Section~\ref{outputmanager:sec:desc})}
 
 
 %% EICOMMANDS
 %% 
 \bigskip
 \xmlstruct
+{eiout}
 {eicommands}
-{
+{%
 %
 A list of commands to be performed.
 %
@@ -72,17 +68,18 @@ All commands inside this environment inherit the values of
 overwrite them.
 %
 }
-{\xmlstructrefwb{eiout}, \xmlstructrefwb{onclickaction}, \xmlstructrefwb{oncodelineclickaction}}
+
 
 %% EIACTIONS
 %% 
 \bigskip
 \xmlstruct
+{eiout}
 {eiactions}
-{
+{%
 %
   A a list of actions to be declared. An action typically executes a
-  list of \xmlstructref{eicommands} when the user interacts with the
+  list of \xmlstructref{eiout}{eicommands} when the user interacts with the
   interface in some predetermined way, e.g., \emph{when the user
     clicks on line 30, highlight lines number 12 and 16}. We say the
   an action is \emph{performed} as a response to the user interaction.
@@ -96,78 +93,79 @@ overwrite them.
   Before \emph{performing} an action, the last \emph{performed} action
   is \emph{unperformed} first. This behavior can be disabled by
   setting the \xmlstructattr{autoclean} attribute to
-  \lst{``false''}. All actions inside this environment inherit the
-  value of \xmlstructattr{autoclean}, and each can overwrite it.
+  \xmlstructvalue{``false''}. All actions inside this environment
+  inherit the value of \xmlstructattr{autoclean}, and each can
+  overwrite it.
 % 
   The attribute \xmlstructattr{dest} and \xmlstructattr{outclass} are
   as in the case of commands (see the description of
-  \xmlstructref{eicommands}).
+  \xmlstructref{eiout}{eicommands}).
 %
 }
-{\xmlstructrefwb{eiout}}
 
 
 %% EICOMMAND
 %% 
 \bigskip
 \xmlstruct
+{eiout}
 {eicommand}
 {
 A command in the \ei output language, briefly:
 \begin{itemize}
-\item \xmlstructref{printonconsolecommand} can be used to print on the console.
+\item \xmlstructref{eiout}{printonconsolecommand} can be used to print on the console.
 %
-\item \xmlstructref{highlightlinescommand} can be used to highlight
+\item \xmlstructref{eiout}{highlightlinescommand} can be used to highlight
   lines in the code editor.
 %
-\item \xmlstructref{dialogboxcommand} can be used to open a dialog
+\item \xmlstructref{eiout}{dialogboxcommand} can be used to open a dialog
   window with a corresponding message.
 %
-\item \xmlstructref{writefilecommand} can be used to add a file (and a
+\item \xmlstructref{eiout}{writefilecommand} can be used to add a file (and a
   corresponding content) to the files tree.
 %
-\item \xmlstructref{setcsscommand} can be used to change the CSS
+\item \xmlstructref{eiout}{setcsscommand} can be used to change the CSS
   properties of some elements.
 %
-\item \xmlstructref{addmarkercommand} can be used to add a marker next
+\item \xmlstructref{eiout}{addmarkercommand} can be used to add a marker next
   to a line in the code editor.
 %
-\item \xmlstructref{addinlinemarkercommand} can be used to add a line
+\item \xmlstructref{eiout}{addinlinemarkercommand} can be used to add a line
   widget (an inlined marker) in the code editor.
 %
 \end{itemize}
 }
-{\xmlstructrefwb{eicommands}}
 
 
 %% EIACTION
 %% 
 \bigskip
 \xmlstruct
+{eiout}
 {eiaction}
-{
+{%
 An action in the \ei output language, briefly:
 \begin{itemize}
 %
-\item \xmlstructref{oncodelineclickaction} can be used to perform an action
+\item \xmlstructref{eiout}{oncodelineclickaction} can be used to perform an action
   when the user clicks on a line in the code editor.
 %
-\item \xmlstructref{onclickaction} can be used to perform an action
+\item \xmlstructref{eiout}{onclickaction} can be used to perform an action
   when the user clicks on a DOM element.
-
+%
 \end{itemize}
 }
-{\xmlstructrefwb{eiactions}}
 
 
 %% PRINTONCONSOLE
 %%
 \bigskip
 \xmlstruct
+{eiout}
 {printonconsolecommand}
-{
+{%
 %
-  Print the content of the \xmlstructref{content} environments on the
+  Print the content of the \xmlstructref{eiout}{content} environments on the
   console with identifier \xmlstructattr{consoleid}.
 %
   If \xmlstructattr{consoleid} is not specified, the output goes to
@@ -178,171 +176,178 @@ An action in the \ei output language, briefly:
   \xmlstructattr{consoletitle} (if specified) is used as its title.
 %
   The attribute \xmlstructattr{outclass} is as described in
-  \xmlstructref{eicommands}.
+  \xmlstructref{eiout}{eicommands}.
 %
 } 
-{
-\xmlstructrefwb{eicommand}
-}
 
 \bigskip
 \xmlstruct
+{eiout}
 {highlightlinescommand}
-{
+{%
 %
-  Highlight the lines specified by \xmlstructref{lines} in the file
+  Highlight the lines specified by \xmlstructref{eiout}{lines} in the file
   \xmlstructattr{dest}. The attribute \xmlstructattr{outclass} is as
-  described in \xmlstructref{eicommands}.
+  described in \xmlstructref{eiout}{eicommands}.
 %
 }
-{\xmlstructrefwb{eicommand}}
+
 
 \bigskip
 \xmlstruct
+{eiout}
 {dialogboxcommand}
-{
-%
+{%
   Open a dialog box with the content specified by the
-  \xmlstructref{content} environemnts. The value of
+  \xmlstructref{eiout}{content} environemnts. The value of
   \xmlstructattr{boxtitle}, if specfied, is used as a title for the
   dialog box. The attribtes \xmlstructattr{boxwidth} and
   \xmlstructattr{boxheight} can be used to set the size of the window.
   The attribute \xmlstructattr{outclass} is as in
-  \xmlstructref{eicommands}.
+  \xmlstructref{eiout}{eicommands}.
 %
 }
-{\xmlstructrefwb{eicommand}}
 
-\bigskip \xmlstruct {writefilecommand} 
-{
+
+\bigskip 
+\xmlstruct 
+{eiout}
+{writefilecommand} 
+{%
 %
   Create a new file and place it in the files view, using the path
   specified by \xmlstructattr{filename}. The file is initialized with
-  the all text insider this tag. If the file exists, and
-  \xmlstructattr{overwrite} is true the content is replaced otherwise
-  a new file is created with a new name. The default value of
-  \xmlstructattr{overwrite} is false.
+  the all text \xmlstructref{eiout}{text} inside this tag. If the file
+  exists, and \xmlstructattr{overwrite} is true the content is
+  replaced otherwise a new file is created with a new name. The
+  default value of \xmlstructattr{overwrite} is
+  \xmlstructvalue{false}.
 % 
-  This command does not support \emph{undo}.
+%  This command does not support \emph{undo}.
 %
 }
-{\xmlstructrefwb{eicommand}}
+
 
 \bigskip
 \xmlstruct
+{eiout}
 {setcsscommand}
-{
+{%
 %
-  Change the CSS properties, as specified bt
-  \xmlstructref{cssproperties}, of all elements that match the
-  selector in \xmlstructref{elements}.
+  Change the CSS properties, as specified by
+  \xmlstructref{eiout}{cssproperties}, of all elements that match the
+  selector in \xmlstructref{eiout}{elements}.
 %
-  There must be exactly one \xmlstructref{elements} environment and
-  one \xmlstructref{cssproperties} environment. 
+  There must be exactly one \xmlstructref{eiout}{elements} environment and
+  one \xmlstructref{eiout}{cssproperties} environment. 
 %
   The elements are typically selected from those generated by other
   commands.
 %
 }
-{\xmlstructrefwb{eicommand}}
+
 
 \bigskip
 \xmlstruct
+{eiout}
 {addmarkercommand}
-{
+{%
 %
   Add a marker next to each line that is specified in
-  \xmlstructref{lines}. The column information from each
-  \xmlstructref{line} in \xmlstructref{lines} is ignored.  All markers
-  are associated with the content given by the \xmlstructref{content}
-  environments, as a tooltip. If the client allows expanding the
-  tooltip to a dialog window, the the attributes
-  \xmlstructattr{boxtitle}, \xmlstructattr{boxwidth} and
+  \xmlstructref{eiout}{lines}. The column information from each
+  \xmlstructref{eiout}{line} in \xmlstructref{eiout}{lines} is
+  ignored.  All markers are associated with the content given by the
+  \xmlstructref{eiout}{content} environments, as a tooltip. If the
+  client allows expanding the tooltip to a dialog window, the
+  attributes \xmlstructattr{boxtitle}, \xmlstructattr{boxwidth} and
   \xmlstructattr{boxheight} can be used to set the properties of the
-  corresponding window (see \xmlstructref{dialogbox}).
+  corresponding window (see \xmlstructref{eiout}{dialogboxcommand}).
 %
-%as
   The attributes \xmlstructattr{dest} and \xmlstructattr{outclass} are
-  as described in \xmlstructref{eicommands}.
+  as described in \xmlstructref{eiout}{eicommands}.
 %
 }
-{\xmlstructrefwb{eicommand}}
 
 \bigskip
 \xmlstruct
+{eiout}
 {addinlinemarkercommand}
-{
+{%
 %
   Add an inline marker (a line widget) for each line that is specified
-  by \xmlstructref{lines}. All line widgets will include the content
-  specified by the \xmlstructref{content} environments. In some
+  by \xmlstructref{eiout}{lines}. All line widgets will include the content
+  specified by the \xmlstructref{eiout}{content} environments. In some
   clients, the supported content might be only of text format.
 %
   The attributes \xmlstructattr{dest} and \xmlstructattr{outclass} are
-  as described in \xmlstructref{eicommands}.
+  as described in \xmlstructref{eiout}{eicommands}.
 %
 }
-{\xmlstructrefwb{eicommand}}
+
 
 \bigskip
 \xmlstruct
+{eiout}
 {oncodelineclickaction}
-{
+{%
 %
-  Add markers at the the code lines specified by \xmlstructref{lines},
+  Add markers at the the code lines specified by \xmlstructref{eiout}{lines},
   such that when any is clicked the commands in
-  \xmlstructref{eicommands} are performed.
+  \xmlstructref{eiout}{eicommands} are performed.
   % 
-  The content given by the \xmlstructref{content} environemts is
-  associated with the markers.
+  The content given by the \xmlstructref{eiout}{content} environemts is
+  associated with the markers (as a tooltip for example).
 %
   The attributes \xmlstructattr{dest} and \xmlstructattr{outclass} are
-  as described in \xmlstructref{eiactions}. Moreover, the above
-  \xmlstructref{eicommands} environment inherits the
+  as described in \xmlstructref{eiout}{eiactions}. Moreover, the above
+  \xmlstructref{eiout}{eicommands} environment inherits the
   \xmlstructattr{dest} and \xmlstructattr{outclass} attributes of this
   environment.
 %
 }
-{\xmlstructrefwb{eiaction}}
+
 
 \bigskip
 \xmlstruct
+{eiout}
 {onclickaction}
-{
+{%
 %
   A click on any DOM element that matches the selector of
-  \xmlstructref{elements}, will execute the commands declared in
-  \xmlstructref{eicommands}.
+  \xmlstructref{eiout}{elements}, will execute the commands declared in
+  \xmlstructref{eiout}{eicommands}.
 %
   The attributes \xmlstructattr{dest} and \xmlstructattr{outclass} are
-  as described in \xmlstructref{eiactions}. Moreover, the above
-  \xmlstructref{eicommands} environment inherits the
+  as described in \xmlstructref{eiout}{eiactions}. Moreover, the above
+  \xmlstructref{eiout}{eicommands} environment inherits the
   \xmlstructattr{dest} and \xmlstructattr{outclass} attributes of this
   environment.
 %
 }
-{\xmlstructrefwb{eiaction}}
+
 
 
 %% 
 \bigskip
 \xmlstruct
+{eiout}
 {lines}
 {
 A group of lines, typically used to specify the lines affected by 
-an \xmlstructref{eicommand} or an \xmlstructref{eiaction}.
+an \xmlstructref{eiout}{eicommand} or an \xmlstructref{eiout}{eiaction}.
 }
-{\xmlstructrefwb{eicommand}, \xmlstructrefwb{eiaction}}
+
 
 %% 
 \bigskip
 \xmlstruct
+{eiout}
 {line}
-{
+{%
 %
   A region (of lines) typically used to specify the region on which
-  the effect of an \xmlstructrefwb{eicommand} or an
-  \xmlstructrefwb{eiaction} is applied:
+  the effect of an \xmlstructref{eiout}{eicommand} or an
+  \xmlstructref{eiout}{eiaction} is applied:
 %
 \begin{itemize}
 \item \xmlstructattr{from} is the start line.
@@ -355,72 +360,144 @@ The default value of \xmlstructattr{to} is as the value of
 \xmlstructattr{from}. The default value of \xmlstructattr{colfrom} is
 0, and of \xmlstructattr{colto} is the end of the line.
 %
-} 
-{\xmlstructrefwb{lines}}
+}
 
 \bigskip
 \xmlstruct
+{eiout}
 {elements}
-{
-Set of elements
+{%
+  Set of selectors (of DOM elements)
 } 
-{\xmlstructrefwb{setcsscommand}, \xmlstructrefwb{onclickaction}}
 
 \bigskip
 \xmlstruct
+{eiout}
 {selector}
-{
+{%
 %
   The attribute \xmlstructattr{value} musy be valid selector as in
-  JQuery. It is used to match some DOM elements.
+  JQuery (see \url{https://jquery.com}). It is used to match some DOM
+  elements.
 %
 }
-{\xmlstructrefwb{elements}}
+
 
 \bigskip
 \xmlstruct
+{eiout}
 {cssproperties}
-{
+{%
 %
 A set of CSS properties.
 %
 }
-{\xmlstructrefwb{setcsscommand}}
+
 
 \bigskip
 \xmlstruct
+{eiout}
 {cssproperty}
-{
+{%
 %
   A CSS property. The attributes \xmlstructattr{name} and this
   \xmlstructattr{value} should correspond to valid CSS properties.
 %
 }
-{\xmlstructrefwb{properties}}
 
 
+%% CONTENT
+\bigskip
+\xmlstruct
+{eiout}
+{content}
+{%
+%
+  A text given in a specific \xmlstructattr{format}, e.g.,
+  \xmlstructvalue{"text"}, \xmlstructvalue{"html"}, etc. If the
+  attribute \xmlstructattr{format} is not provided, then it is assumed
+  to be \xmlstructvalue{"text"} format (plain text).
+%
+}
+
+\bigskip
 \noindent
-\xmlstructdef{consoleid}
+\xmlstructdef{eiout}{consoleid}
 
 ( [a-z,A-Z,0-9,-,\_]+ | new | default )
 
+\medskip
+\noindent
 The value 'new' means a new console, no reference to this console is
 saved. The value 'default' means the default console of the client.
 
+\bigskip
 \noindent
-\xmlstructdef{path}
-
-a path to file, including the file name, starting from the root /\_ei\_files/
+\xmlstructdef{eiout}{path}
 
 \noindent
-\xmlstructdef{version}
+A path to file, including the file name. There are two from, the first
+one is a full path including the temporal directory name that is
+created by the server, e.g.,
+``\texttt{/tmp/easyinterfae\_XYZ/\_ei\_files/dir1/dir2/file.c}''. The
+simply ignore the prefix we
+``\texttt{/tmp/easyinterfae\_XYZ/\_ei\_files/}'', i.e., the value in
+this case is ``\texttt{dir1/dir2/file.c}''.
+
+\bigskip
+\noindent
+\xmlstructdef{eiout}{version}
 
 $x.y$, where $x$ is the major version number and $y$ is the minor one,
 e.g. $1.0$, $1.1$, etc.
 
+\bigskip
 \noindent
-\xmlstructdef{outclass}
+\xmlstructdef{eiout}{outclass}
 
-none | info | warning | error 
+( none | info | warning | error )
+
+\bigskip
+\noindent
+\xmlstructdef{eiout}{bool}
+
+( \lst{"true"} | \lst{"false"} )
+
+\bigskip
+\noindent
+\xmlstructdef{eiout}{int}
+
+An integer
+
+\bigskip
+\noindent
+\xmlstructdef{eiout}{string}
+
+A string
+
+\bigskip
+\noindent
+\xmlstructdef{eiout}{text}
+
+Free text.
+
+\bigskip
+\noindent
+\xmlstructdef{eiout}{textformat}
+
+( \lst{"text"} | \lst{"html"} | \lst{"svg"})
+
+\bigskip
+\noindent
+\xmlstructdef{eiout}{cssname}
+
+A valid name for a CSS property.
+
+\bigskip
+\noindent
+\xmlstructdef{eiout}{cssval}
+
+A valid value for a corresponding CSS property.
+
 
 
