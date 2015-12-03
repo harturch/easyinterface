@@ -9,7 +9,8 @@ window.OutputManager = (function() {
 	    SetCSSCommand, 
 	    AddInLineMarkerCommand, 
 	    DialogBoxCommand,
-	    WriteFileCommand
+	    WriteFileCommand,
+	    StreamCommand
 	];
 
 	this.ActionsCollection =  [
@@ -60,10 +61,10 @@ window.OutputManager = (function() {
 
 	//
 	output:
-	function( output ) {
-
+	function( output, server, stream ) {
 	    // first we clear all current annotations, if needed.
-	    this.clearAllAnnotations();
+	    if(!stream)
+	     this.clearAllAnnotations();
 
 	    // we check if the returned output includes and <error>
 	    // environment, in such case we just call another method
@@ -79,12 +80,13 @@ window.OutputManager = (function() {
 	    // if we are here then there was no error
 	    //
 	    var ei_out = $(output).find(_ei.outlang.syntax.eiout);
+	    var ei_stream = $(output).find(_ei.outlang.syntax.eistream);
 
 	    // if the output does not include any <eiout> tag, we
-	    // simply print the output text on the cosole. This is
+	    // simply print the output text on the console. This is
 	    // done by generating a printconsole command
 	    //
-	    if ( ei_out.size() == 0 ) {
+	    if ( ei_out.size() == 0 && ei_stream.size() == 0) {
 		output = jQuery.parseXML( 
 		               "<"+_ei.outlang.syntax.eiout+" version='1'>"+
 		                 "<"+_ei.outlang.syntax.eicommands+">"+
@@ -98,11 +100,13 @@ window.OutputManager = (function() {
 		);
 		ei_out = $(output).find(_ei.outlang.syntax.eiout);
 	    }
-	    
-	    this.version = $(ei_out).attr("version");
-	    this.lastOutput = ei_out;
+	    this.version = $(ei_out).attr("version") || $(ei_stream).attr("version");
+	    this.lastOutput = ei_out || ei_stream;
 	    try {
-		this.executeEIOutput( ei_out );
+	      if( ei_out.size() == 0 ){
+		this.executeEIOutput( ei_stream, server, stream );
+	      }else
+		this.executeEIOutput( ei_out, server, false );
 	    } catch (err) {
 		console.log("Error occurred while processing the output:");
 		console.log(err);
@@ -112,25 +116,27 @@ window.OutputManager = (function() {
 
 	//
 	executeEIOutput:
-	function( output ) {
+	function( output, server, stream ) {
 	    var self = this;   
-
 	    // parse the commands
-	    this.commands = new Set();
+	   if (!stream)
+ 	        this.commands = new Set();
 	    output.find("> "+_ei.outlang.syntax.eicommands).each( function() {
 	    	var dest = $(this).attr(_ei.outlang.syntax.dest) || self.codearea.getCurrentTabId();
                 var outclass = $(this).attr(_ei.outlang.syntax.outclass);
 		$(this).children().each( function() {
 		    self.parseCommand( $(this), self.commands, {
 			outclass: outclass,
-			dest: dest
+			dest: dest,
+			server: server
 		    });
 		});
 	    });
 
 	    // parse the actions
+	  if(!stream)
 	    this.actions = new Set();
-	    output.find("> "+_ei.outlang.syntax.eiactions).each( function() {	
+	  output.find("> "+_ei.outlang.syntax.eiactions).each( function() {	
 		var dest = $(this).attr(_ei.outlang.syntax.dest) || self.codearea.getCurrentTabId();
                 var outclass = $(this).attr(_ei.outlang.syntax.outclass);
                 var autoclean = $(this).attr(_ei.outlang.syntax.actionautoclean) || true;
@@ -139,7 +145,8 @@ window.OutputManager = (function() {
 	    	    self.parseAction( $(this), self.actions, {
 			outclass: outclass,
 			dest: dest,
-			autoclean: autoclean
+			autoclean: autoclean,
+			server: server
 		    });
 	    	});
 	    });
@@ -171,7 +178,8 @@ window.OutputManager = (function() {
 		    filemanager: this.filemanager,
 		    codearea : this.codearea,
 		    console  : this.console,
-		    defaultConsoleId: this.defaultConsoleId
+		    defaultConsoleId: this.defaultConsoleId,
+		    server   : options.server
 		});
 
 		if ( cobj != null )  {  // we have succeeded to parse 'c' 
@@ -199,7 +207,8 @@ window.OutputManager = (function() {
 		    codearea : this.codearea,
 		    console  : this.console,
 		    autoclean: this.autoclean,
-		    defaultConsoleId: this.defaultConsoleId
+		    defaultConsoleId: this.defaultConsoleId,
+		    server : options.server
 		});
 		if ( aobj != null ) {
 		    actions.add(aobj);
@@ -256,6 +265,7 @@ window.OutputManager = (function() {
 	//
 	clearAllAnnotations:
 	function() {
+	  var self = this;
 	    this.commands.asyncIterate( function(c) { c.undo(); });
 	    this.actions.asyncIterate( function(a) { a.deActivate(); });
 	    this.lastAction = false;
